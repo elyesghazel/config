@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════
-# ELYES GHAZEL - FISH SHELL CONFIGURATION
+# ELYES - FISH SHELL CONFIGURATION
 # ═══════════════════════════════════════════════════════════════════════════
 
 set -g fish_greeting ""
