@@ -11,7 +11,6 @@ set -gx EDITOR "code --wait"
 set -gx BIZ_PATH $HOME/projects/03_business
 set -gx EDU_PATH $HOME/projects/02_education
 set -gx PLAY_PATH $HOME/projects/04_playground
-set -gx PORTFOLIO_PATH $HOME/projects/01_swisscom/portfolio
 
 # ─────────────────────────────────────────────────────────────────────────
 # ABBREVIATIONS
@@ -21,7 +20,6 @@ set -gx PORTFOLIO_PATH $HOME/projects/01_swisscom/portfolio
 abbr -a cdbiz "cd $BIZ_PATH"
 abbr -a cdedu "cd $EDU_PATH"
 abbr -a cdplay "cd $PLAY_PATH"
-abbr -a cdport "cd $PORTFOLIO_PATH"
 
 # Development & Git
 abbr -a g "git"
@@ -81,14 +79,24 @@ end
 # FUNCTION: GitHub Public Repo Creator (npu)
 # ─────────────────────────────────────────────────────────────────────────
 function npu
-    set -l repo_name $argv[1]
-    
-    # Case: Name provided -> Initialize in Playground
+    set -l repo_name ""
+    set -l visibility "--public"
+    set -l playground_path "$HOME/projects/04_playground"
+
+    # 1. Parse Arguments
+    for arg in $argv
+        if test "$arg" = "-p"
+            set visibility "--private"
+        else
+            set repo_name $arg
+        end
+    end
+
+    # 2. Determine Path & Name
     if test -n "$repo_name"
-        set -l final_path "$PLAY_PATH/$repo_name"
+        set -l final_path "$playground_path/$repo_name"
         mkdir -p $final_path
         cd $final_path
-    # Case: No name provided -> Use current directory
     else
         set repo_name (basename (pwd))
         if test (pwd) = "$HOME"
@@ -97,25 +105,37 @@ function npu
         end
     end
 
+    # 3. Git Initialization
     if not test -d .git
         git init -b main
     end
 
+    if not test -f README.md
+        echo "# $repo_name" > README.md
+    end
+
+    # 4. Commit and Sync
     git add .
     git commit -m "Initial commit" 2>/dev/null
 
     if command -sq gh
-        echo "Syncing: $repo_name to GitHub..."
-        gh repo create $repo_name --public --source=. --remote=origin --push 2>/dev/null; or git push -u origin (git branch --show-current)
+        echo "Status: Syncing $repo_name to GitHub ($visibility)..."
+        if gh repo create $repo_name $visibility --source=. --remote=origin --push 2>/dev/null
+            echo "✅ Success: $visibility repository created."
+        else
+            echo "Notice: Repository might already exist. Attempting push..."
+            git push -u origin (git branch --show-current)
+        end
     else
-        echo "Error: GitHub CLI (gh) not found. Please run 'gh auth login'."
+        echo "Error: GitHub CLI (gh) not found."
         return 1
     end
 
     code .
 end
 
-# ─────────────────────────────────────────────────────────────────────────
+
+# ________________________________________________________________________
 # FUNCTION: Background Timer (t)
 # ─────────────────────────────────────────────────────────────────────────
 function t
