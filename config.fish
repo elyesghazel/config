@@ -26,8 +26,8 @@ abbr -a g "git"
 abbr -a gs "git status"
 abbr -a gc "git commit -m"
 abbr -a gp "git push"
-abbr -a nrd "npm run dev"
-abbr -a ni "npm install"
+abbr -a prd "pnpm run dev"
+abbr -a pni "pnpm install"
 
 # System Config
 abbr -a fconf "nano ~/.config/fish/config.fish"
@@ -142,3 +142,4 @@ function t
     nohup bash -c "sleep $argv[1] && notify-send 'Timer Expired' 'Duration: $argv[1]' && canberra-gtk-play -i complete-graduation" >/dev/null 2>&1 &
     echo "Timer started for $argv[1]."
 end
+set -gx PATH $HOME/.nvm/versions/node/v22.22.0/bin $PATH
