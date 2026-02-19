@@ -10,7 +10,6 @@ set -g fish_greeting ""
 set -gx EDITOR "code --wait"
 set -gx BIZ_PATH ~/projects/03_business
 set -gx EDU_PATH ~/projects/02_education
-set -gx PORTFOLIO_PATH ~/projects/01_swisscom/portfolio
 # ─────────────────────────────────────────────────────────────────────────
 # ABBREVIATIONS 
 # ─────────────────────────────────────────────────────────────────────────
@@ -18,7 +17,6 @@ set -gx PORTFOLIO_PATH ~/projects/01_swisscom/portfolio
 # Navigieren
 abbr -a cdbiz "cd $BIZ_PATH"
 abbr -a cdedu "cd $EDU_PATH"
-abbr -a cdport "cd $PORTFOLIO_PATH"
 
 # Coding & Git
 abbr -a g "git"
