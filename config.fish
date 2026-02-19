@@ -7,10 +7,21 @@ set -g fish_greeting ""
 # ─────────────────────────────────────────────────────────────────────────
 # ENVIRONMENT & CORE PATHS
 # ─────────────────────────────────────────────────────────────────────────
-set -gx EDITOR "code --wait"
-set -gx BIZ_PATH $HOME/projects/03_business
-set -gx EDU_PATH $HOME/projects/02_education
-set -gx PLAY_PATH $HOME/projects/04_playground
+
+if test (uname) = "Linux"; and not test -n "$WSL_DISTRO_NAME"
+    set -gx EDITOR "code --wait"
+    set -gx BIZ_PATH $HOME/projects/03_business
+    set -gx EDU_PATH $HOME/projects/02_education
+    set -gx PLAY_PATH $HOME/projects/04_playground
+    
+    fish_add_path $HOME/.platformio/penv/bin
+else
+    # WSL / WINDOWS
+    set -gx EDITOR "code --wait"
+    set -gx BIZ_PATH $HOME/projects/03_business
+    set -gx EDU_PATH $HOME/projects/02_education
+    set -gx PLAY_PATH $HOME/projects/04_playground
+end
 
 # ─────────────────────────────────────────────────────────────────────────
 # ABBREVIATIONS
@@ -139,7 +150,15 @@ end
 # FUNCTION: Background Timer (t)
 # ─────────────────────────────────────────────────────────────────────────
 function t
-    nohup bash -c "sleep $argv[1] && notify-send 'Timer Expired' 'Duration: $argv[1]' && canberra-gtk-play -i complete-graduation" >/dev/null 2>&1 &
-    echo "Timer started for $argv[1]."
+    # Prüfen, ob wir auf Linux mit GUI sind
+    if type -q notify-send
+        nohup bash -c "sleep $argv[1] && notify-send 'Timer Expired' 'Duration: $argv[1]' && paplay /usr/share/sounds/freedesktop/stereo/complete.oga" >/dev/null 2>&1 &
+        echo "Timer started for $argv[1] (Linux Desktop Mode)."
+    else
+        # Fallback für WSL
+        nohup bash -c "sleep $argv[1] && echo -e '\a'" >/dev/null 2>&1 &
+        echo "Timer started for $argv[1] (Terminal Bell)."
+    end
 end
+
 set -gx PATH $HOME/.nvm/versions/node/v22.22.0/bin $PATH
